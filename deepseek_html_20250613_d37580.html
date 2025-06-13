@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusBot | Solution IA pour votre Service Client</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f1f5f9;
+            --gray: #94a3b8;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .cta-button {
+            background: var(--gradient);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 160px 0 80px;
+            background: linear-gradient(to bottom, #f0f9ff, #ffffff);
+        }
+        
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .hero-text {
+            flex: 1;
+            max-width: 600px;
+        }
+        
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #475569;
+        }
+        
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* Chatbot Demo */
+        .chatbot-demo {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+            margin-left: 40px;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background: white;
+            padding: 5px;
+        }
+        
+        .chat-messages {
+            height: 400px;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+        
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            max-width: 80%;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .message.bot {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid var(--primary);
+            margin-right: auto;
+        }
+        
+        .message.user {
+            background: var(--primary);
+            color: white;
+            margin-left: auto;
+        }
+        
+        .chat-input-area {
+            padding: 15px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            background: white;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .chat-send {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 45px;
+            height: 45px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chat-send:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Features */
+        .features {
+            padding: 100px 0;
+            background: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: #64748b;
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid #f1f5f9;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: #dbeafe;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 30px;
+            color: var(--primary);
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .feature-card p {
+            color: #64748b;
+            text-align: center;
+        }
+        
+        /* Pricing */
+        .pricing {
+            padding: 100px 0;
+            background: #f1f5f9;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .pricing-header {
+            padding: 30px;
+            text-align: center;
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .popular {
+            background: #f59e0b;
+            color: white;
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            padding: 8px 30px;
+            transform: rotate(45deg);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .pricing-body {
+            padding: 30px;
+        }
+        
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 20px 0;
+            color: white;
+        }
+        
+        .price span {
+            font-size: 1rem;
+            font-weight: 400;
+        }
+        
+        .pricing-list {
+            list-style: none;
+            margin: 25px 0;
+        }
+        
+        .pricing-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .pricing-list li i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            padding: 100px 0;
+            background: white;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            border: 1px solid #f1f5f9;
+        }
+        
+        .testimonial-content {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+            font-style: italic;
+            color: #475569;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient);
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .author-info h4 {
+            margin-bottom: 5px;
+        }
+        
+        .author-info p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .cta-section p {
+            max-width: 700px;
+            margin: 0 auto 40px;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 80px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hero-text {
+                margin-bottom: 50px;
+            }
+            
+            .hero-image {
+                width: 100%;
+                margin-left: 0;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 140px 0 60px;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    NexusBot
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features">Fonctionnalités</a></li>
+                    <li><a href="#pricing">Tarifs</a></li>
+                    <li><a href="#testimonials">Témoignages</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <a href="#pricing" class="cta-button">Démarrer</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Solution IA pour votre Service Client</h1>
+                    <p>NexusBot transforme votre support client avec une intelligence artificielle avancée capable de répondre à toutes les questions de vos clients, 24h/24.</p>
+                    <a href="#chat-demo" class="cta-button">Tester le Chatbot</a>
+                </div>
+                <div class="hero-image">
+                    <div class="chatbot-demo">
+                        <div class="chat-header">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMyNTYzZWIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOCAxMmg4TTggNmg4TTggMThoOCIvPjwvc3ZnPg==" alt="Chatbot">
+                            <div>
+                                <h3>Assistant NexusBot</h3>
+                                <p>En ligne • Prêt à répondre</p>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message bot">
+                                Bonjour, je suis l'assistant IA de NexusBot. Posez-moi n'importe quelle question et je vous répondrai immédiatement.
+                            </div>
+                            <div class="message bot">
+                                Voici quelques exemples de questions que vous pouvez me poser :
+                            </div>
+                            <div class="message bot">
+                                • Comment fonctionne NexusBot ?<br>
+                                • Quelles sont vos tarifs ?<br>
+                                • Comment intégrer NexusBot sur mon site web ?<br>
+                                • Quelle est votre politique de confidentialité ?
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" id="user-input" placeholder="Tapez votre question ici...">
+                            <button class="chat-send" id="send-message">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Fonctionnalités Avancées</h2>
+                <p>Découvrez les capacités exceptionnelles de notre solution IA</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>IA Conversationnelle</h3>
+                    <p>Notre technologie comprend le contexte et le sens des questions pour fournir des réponses précises et pertinentes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Réponses Instantanées</h3>
+                    <p>Les clients reçoivent des réponses en moins d'une seconde, réduisant le temps d'attente et augmentant la satisfaction.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Multilingue</h3>
+                    <p>Support de plus de 30 langues pour répondre à une clientèle internationale sans barrières linguistiques.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <h3>Intégration Facile</h3>
+                    <p>Intégrez NexusBot en quelques minutes sur votre site web, application mobile ou plateforme de support client.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Analyses Avancées</h3>
+                    <p>Tableaux de bord complets pour suivre les performances et comprendre les besoins de vos clients.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Sécurité Maximale</h3>
+                    <p>Données cryptées et conformité RGPD pour protéger votre entreprise et vos clients.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>Tarifs Transparents</h2>
+                <p>Des solutions adaptées à chaque taille d'entreprise</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Startup</h3>
+                        <div class="price">49€<span>/mois</span></div>
+                        <p>Idéal pour les petites entreprises</p>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="pricing-list">
+                            <li><i class="fas fa-check"></i> 1,000 conversations/mois</li>
+                            <li><i class="fas fa-check"></i> Support par email</li>
+                            <li><i class="fas fa-check"></i> Intégration basique</li>
+                            <li><i class="fas fa-check"></i> Base de connaissances</li>
+                            <li><i class="fas fa-check"></i> 1 langue supportée</li>
+                            <li><i class="fas fa-times"></i> Rapports analytiques avancés</li>
+                        </ul>
+                        <a href="#" class="cta-button">Commencer</a>
+                    </div>
+                </div>
+                <div class="pricing-card">
+                    <div class="popular">Populaire</div>
+                    <div class="pricing-header">
+                        <h3>Business</h3>
+                        <div class="price">99€<span>/mois</span></div>
+                        <p>Solution complète pour entreprises</p>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="pricing-list">
+                            <li><i class="fas fa-check"></i> 10,000 conversations/mois</li>
+                            <li><i class="fas fa-check"></i> Support prioritaire</li>
+                            <li><i class="fas fa-check"></i> Intégration CRM</li>
+                            <li><i class="fas fa-check"></i> Base de connaissances illimitée</li>
+                            <li><i class="fas fa-check"></i> 5 langues supportées</li>
+                            <li><i class="fas fa-check"></i> Rapports analytiques</li>
+                        </ul>
+                        <a href="#" class="cta-button">Commencer</a>
+                    </div>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <div class="price">199€<span>/mois</span></div>
+                        <p>Solution sur mesure</p>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="pricing-list">
+                            <li><i class="fas fa-check"></i> Conversations illimitées</li>
+                            <li><i class="fas fa-check"></i> Support dédié 24/7</li>
+                            <li><i class="fas fa-check"></i> Intégrations personnalisées</li>
+                            <li><i class="fas fa-check"></i> IA sur mesure</li>
+                            <li><i class="fas fa-check"></i> 20+ langues supportées</li>
+                            <li><i class="fas fa-check"></i> Analytics premium</li>
+                        </ul>
+                        <a href="#" class="cta-button">Commencer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>Ils nous font confiance</h2>
+                <p>Découvrez ce que disent nos clients satisfaits</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        NexusBot a transformé notre service client. Nous avons réduit notre temps de réponse de 80% et augmenté la satisfaction client de 40%. La précision des réponses est remarquable.
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-image">MD</div>
+                        <div class="author-info">
+                            <h4>Martin Dubois</h4>
+                            <p>Directeur, TechSolutions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        L'intégration a été extrêmement simple et notre équipe a été opérationnelle en moins d'une journée. Notre chatbot gère maintenant 70% des requêtes client sans intervention humaine.
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-image">SL</div>
+                        <div class="author-info">
+                            <h4>Sophie Lambert</h4>
+                            <p>CEO, EcoStyle</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        La capacité de NexusBot à comprendre et répondre à des questions complexes nous a impressionnés. C'est bien plus qu'un simple chatbot, c'est un véritable assistant IA.
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-image">JT</div>
+                        <div class="author-info">
+                            <h4>Jean Tremblay</h4>
+                            <p>CTO, InnovateX</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Prêt à révolutionner votre service client ?</h2>
+            <p>Rejoignez plus de 500 entreprises qui ont déjà transformé leur support client avec NexusBot</p>
+            <a href="#pricing" class="cta-button">Essai gratuit 14 jours</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>NexusBot</h3>
+                    <p>Des solutions IA innovantes pour transformer votre service client et booster votre croissance.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Produit</h3>
+                    <ul class="footer-links">
+                        <li><a href="#features">Fonctionnalités</a></li>
+                        <li><a href="#pricing">Tarifs</a></li>
+                        <li><a href="#">Intégrations</a></li>
+                        <li><a href="#">Statut</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Ressources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Centre d'aide</a></li>
+                        <li><a href="#">Tutoriels</a></li>
+                        <li><a href="#">API Développeurs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> contact@nexusbot.com</li>
+                        <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Paris, France</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2023 NexusBot. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Chatbot functionality
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-message');
+        
+        // Knowledge base for the chatbot
+        const knowledgeBase = {
+            "bonjour": "Bonjour, comment puis-je vous aider aujourd'hui ?",
+            "salut": "Salut, que puis-je faire pour vous ?",
+            "comment ça marche": "NexusBot s'intègre à votre site web ou application et répond automatiquement aux questions de vos clients grâce à une technologie IA avancée.",
+            "tarifs": "Nous proposons trois formules : Startup à 49€/mois, Business à 99€/mois et Enterprise à 199€/mois. Chaque formule offre des fonctionnalités adaptées à la taille de votre entreprise.",
+            "essai gratuit": "Oui, nous proposons un essai gratuit de 14 jours sans engagement. Vous pouvez l'activer directement depuis notre site.",
+            "intégration": "L'intégration de NexusBot est très simple. Nous fournissons un code d'intégration que vous pouvez ajouter à votre site en moins de 5 minutes.",
+            "langues supportées": "NexusBot supporte plus de 30 langues différentes, dont l'anglais, le français, l'espagnol, l'allemand, l'italien et bien d'autres.",
+            "sécurité": "Nous prenons la sécurité très au sérieux. Toutes les données sont chiffrées et nous sommes conformes au RGPD. Vos données sont en sécurité avec nous.",
+            "politique de confidentialité": "Notre politique de confidentialité est disponible sur notre site web. Nous ne vendons pas vos données et les utilisons uniquement pour améliorer notre service.",
+            "contact": "Vous pouvez nous contacter par email à contact@nexusbot.com ou par téléphone au +33 1 23 45 67 89. Notre équipe est disponible du lundi au vendredi de 9h à 18h.",
+            "fonctionnalités": "NexusBot offre de nombreuses fonctionnalités : réponses instantanées, support multilingue, intégrations, analyses avancées et personnalisation complète.",
+            "merci": "Je vous en prie ! N'hésitez pas si vous avez d'autres questions.",
+            "au revoir": "Au revoir, bonne journée !",
+            "default": "Je ne suis pas sûr de comprendre votre question. Pourriez-vous la reformuler ? Je suis là pour répondre à toutes vos questions sur NexusBot."
+        };
+        
+        // Function to add a message to the chat
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user' : 'bot');
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to the bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Function to process user input
+        function processInput() {
+            const inputText = userInput.value.trim().toLowerCase();
+            
+            if (inputText === '') return;
+            
+            // Add user message
+            addMessage(inputText, true);
+            
+            // Clear input
+            userInput.value = '';
+            
+            // Find the best response
+            let response = knowledgeBase.default;
+            for (const [key, value] of Object.entries(knowledgeBase)) {
+                if (inputText.includes(key)) {
+                    response = value;
+                    break;
+                }
+            }
+            
+            // Simulate thinking time
+            setTimeout(() => {
+                addMessage(response);
+            }, 500);
+        }
+        
+        // Event listeners
+        sendButton.addEventListener('click', processInput);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                processInput();
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
